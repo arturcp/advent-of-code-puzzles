@@ -1,4 +1,3 @@
-require 'byebug'
 require_relative '../input.rb'
 
 def multiplied_pair_that_adds_up_to(total, list)
@@ -20,5 +19,3 @@ INPUT.each_with_index do |number, index|
     return
   end
 end
-
-# puts multiplied_pair_that_adds_up_to(2020)
