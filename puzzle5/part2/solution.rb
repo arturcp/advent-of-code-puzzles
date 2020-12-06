@@ -7,11 +7,15 @@ require_relative '../b_instruction.rb'
 require_relative '../l_instruction.rb'
 require_relative '../r_instruction.rb'
 
-max_seat_id = -1
+ids = []
 INPUT.each do |instructions|
   seat = BoardingPass.new(instructions).seat
-  # puts seat.to_s
-  max_seat_id = seat.id if seat.id > max_seat_id
+  ids << seat.id
 end
 
-puts max_seat_id
+ids = ids.sort
+
+puts ''
+ids.each_with_index do |id, index|
+  puts id + 1 if ids[index + 1] && ids[index + 1] != id + 1
+end
