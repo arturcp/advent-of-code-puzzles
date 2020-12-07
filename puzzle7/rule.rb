@@ -4,9 +4,11 @@ class Rule
     parts = rule_text.split(' contain ')
     name = parts[0].gsub(' bags', '')
     eligible_contents = parts[1].split(',').map do |eligible_content|
+      next if eligible_content == 'no other bags'
+
       parts = eligible_content.strip.split(' ')
       { quantity: parts.shift.to_i, item: parts.join(' ') }
-    end
+    end.compact
 
     new(name, eligible_contents)
   end
