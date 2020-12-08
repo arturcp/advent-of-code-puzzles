@@ -12,11 +12,12 @@ class Controller
 
     current_command = commands[control_variables.current_index]
 
-    while !current_command.executed?
+    while current_command && !current_command.executed?
       current_command.run(control_variables)
       current_command = commands[control_variables.current_index]
     end
 
+    control_variables.infinite_loop = !current_command.nil?
     control_variables
   end
 end
