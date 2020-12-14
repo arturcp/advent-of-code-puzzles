@@ -1,8 +1,6 @@
 require_relative '../input.rb'
 
 joltages = INPUT.sort
-device_joltage = joltages.last + 3
-
 current_jolts = 0
 
 differences = {
