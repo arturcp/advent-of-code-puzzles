@@ -2,8 +2,6 @@ require_relative '../input.rb'
 require_relative '../rule.rb'
 require_relative '../eligible_content.rb'
 
-require 'byebug'
-
 bags = INPUT.each_with_object({}) do |rule, hash|
   object = Rule.build(rule)
   hash[object.name] = object

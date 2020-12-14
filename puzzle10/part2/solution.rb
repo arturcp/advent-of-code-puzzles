@@ -1,5 +1,4 @@
 require_relative '../input.rb'
-require 'byebug'
 
 class Combination
   attr_reader :list, :cache
