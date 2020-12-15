@@ -1,50 +1,97 @@
---- Day 14: Docking Data ---
-As your ferry approaches the sea port, the captain asks for your help again. The computer system that runs this port isn't compatible with the docking program on the ferry, so the docking parameters aren't being correctly initialized in the docking program's memory.
+--- Day 11: Seating System ---
+Your plane lands with plenty of time to spare. The final leg of your journey is a ferry that goes directly to the tropical island where you can finally start your vacation. As you reach the waiting area to board the ferry, you realize you're so early, nobody else has even arrived yet!
 
-After a brief inspection, you discover that the sea port's computer system uses a strange bitmask system in its initialization program. Although you don't have the correct decoder chip handy, you can emulate it in software!
+By modeling the process people use to choose (or abandon) their seat in the waiting area, you're pretty sure you can predict the best place to sit. You make a quick map of the seat layout (your puzzle input).
 
-The initialization program (your puzzle input) can either update the bitmask or write a value to memory. Values and memory addresses are both 36-bit unsigned integers. For example, ignoring bitmasks for a moment, a line like mem[8] = 11 would write the value 11 to memory address 8.
-
-The bitmask is always given as a string of 36 bits, written with the most significant bit (representing 2^35) on the left and the least significant bit (2^0, that is, the 1s bit) on the right. The current bitmask is applied to values immediately before they are written to memory: a 0 or 1 overwrites the corresponding bit in the value, while an X leaves the bit in the value unchanged.
-
-For example, consider the following program:
+The seat layout fits neatly on a grid. Each position is either floor (.), an empty seat (L), or an occupied seat (#). For example, the initial seat layout might look like this:
 
 ```
-mask = XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X
-mem[8] = 11
-mem[7] = 101
-mem[8] = 0
+L.LL.LL.LL
+LLLLLLL.LL
+L.L.L..L..
+LLLL.LL.LL
+L.LL.LL.LL
+L.LLLLL.LL
+..L.L.....
+LLLLLLLLLL
+L.LLLLLL.L
+L.LLLLL.LL
 ```
 
-This program starts by specifying a bitmask (mask = ....). The mask it specifies will overwrite two bits in every written value: the 2s bit is overwritten with 0, and the 64s bit is overwritten with 1.
+Now, you just need to model the people who will be arriving shortly. Fortunately, people are entirely predictable and always follow a simple set of rules. All decisions are based on the number of occupied seats adjacent to a given seat (one of the eight positions immediately up, down, left, right, or diagonal from the seat). The following rules are applied to every seat simultaneously:
 
-The program then attempts to write the value 11 to memory address 8. By expanding everything out to individual bits, the mask is applied as follows:
+If a seat is empty (L) and there are no occupied seats adjacent to it, the seat becomes occupied.
+If a seat is occupied (#) and four or more seats adjacent to it are also occupied, the seat becomes empty.
+Otherwise, the seat's state does not change.
+Floor (.) never changes; seats don't move, and nobody sits on the floor.
 
-```
-value:  000000000000000000000000000000001011  (decimal 11)
-mask:   XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X
-result: 000000000000000000000000000001001001  (decimal 73)
-```
-
-So, because of the mask, the value 73 is written to memory address 8 instead. Then, the program tries to write 101 to address 7:
+After one round of these rules, every seat in the example layout becomes occupied:
 
 ```
-value:  000000000000000000000000000001100101  (decimal 101)
-mask:   XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X
-result: 000000000000000000000000000001100101  (decimal 101)
+#.##.##.##
+#######.##
+#.#.#..#..
+####.##.##
+#.##.##.##
+#.#####.##
+..#.#.....
+##########
+#.######.#
+#.#####.##
 ```
 
-This time, the mask has no effect, as the bits it overwrote were already the values the mask tried to set. Finally, the program tries to write 0 to address 8:
+After a second round, the seats with four or more occupied adjacent seats become empty again:
 
 ```
-value:  000000000000000000000000000000000000  (decimal 0)
-mask:   XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X
-result: 000000000000000000000000000001000000  (decimal 64)
+#.LL.L#.##
+#LLLLLL.L#
+L.L.L..L..
+#LLL.LL.L#
+#.LL.LL.LL
+#.LLLL#.##
+..L.L.....
+#LLLLLLLL#
+#.LLLLLL.L
+#.#LLLL.##
 ```
 
-64 is written to address 8 instead, overwriting the value that was there previously.
+This process continues for three more rounds:
 
-To initialize your ferry's docking program, you need the sum of all values left in memory after the initialization program completes. (The entire 36-bit address space begins initialized to the value 0 at every address.) In the above example, only two values in memory are not zero - 101 (at address 7) and 64 (at address 8) - producing a sum of 165.
+```
+#.##.L#.##
+#L###LL.L#
+L.#.#..#..
+#L##.##.L#
+#.##.LL.LL
+#.###L#.##
+..#.#.....
+#L######L#
+#.LL###L.L
+#.#L###.##
 
-Execute the initialization program. What is the sum of all values left in memory after it completes?
+#.#L.L#.##
+#LLL#LL.L#
+L.L.L..#..
+#LLL.##.L#
+#.LL.LL.LL
+#.LL#L#.##
+..L.L.....
+#L#LLLL#L#
+#.LLLLLL.L
+#.#L#L#.##
 
+#.#L.L#.##
+#LLL#LL.L#
+L.#.L..#..
+#L##.##.L#
+#.#L.LL.LL
+#.#L#L#.##
+..L.L.....
+#L#L##L#L#
+#.LLLLLL.L
+#.#L#L#.##
+```
+
+At this point, something interesting happens: the chaos stabilizes and further applications of these rules cause no seats to change state! Once people stop moving around, you count 37 occupied seats.
+
+Simulate your seating area by applying the seating rules repeatedly until no seats change state. How many seats end up occupied?
