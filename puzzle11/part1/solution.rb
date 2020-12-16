@@ -2,8 +2,6 @@ require_relative '../input.rb'
 require 'colorize'
 
 class Map
-  attr_reader :iteration
-
   def initialize(strings_map)
     @map = []
     strings_map.each_with_index do |row, index|
@@ -12,14 +10,12 @@ class Map
   end
 
   def play
-    @iteration = 0
     while status = next_turn; end
 
     count_occupied_seats
   end
 
   def next_turn
-    @iteration += 1
     new_map = clone
 
     map.each_with_index do |row, row_index|
